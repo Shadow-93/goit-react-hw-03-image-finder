@@ -1,54 +1,71 @@
-import React, {Component} from 'react';
-import axios from 'axios';
+import React, { Component } from "react";
 
-import Searchbar from './Searchbar';
-import ImageGallery from './ImageGallery';
+import apiSearch from "./services/api";
+import Searchbar from "./Searchbar";
+import ImageGallery from "./ImageGallery";
+import Button from "./Button";
+import Loader from "./Loader";
 
-import './App.css';
+import "./App.css";
 
 class App extends Component {
-
   state = {
     galleryItems: [],
     loading: false,
     error: null,
-    q: "",
-  }
-  // https://pixabay.com/api/?q=что_искать&page=номер_страницы&key=твой_ключ&image_type=photo&orientation=horizontal&per_page=12
+    searchQuery: "",
+    page: 0,
+  };
 
-  componentDidMount(){
-    const key = '17751267-16ded02a741af1cdfc94a2144';
-    const url = 'https://pixabay.com/api/';
+  componentDidUpdate(prevProps, PrevState) {
+    const prevQuery = PrevState.searchQuery;
+    const nextQuery = this.state.searchQuery;
 
-    this.setState({loading:true})
-
-    axios
-    .get(`${url}?q=cats&page=1&key=${key}&image_type=photo&orientation=horizontal&per_page=12`)
-    .then(res=>{this.setState({galleryItems: res.data.hits})})
-    .catch(e=>{this.setState({ e })})
-    .finally(() => this.setState({loading: false}))
+    if (prevQuery !== nextQuery) {
+      this.fetchItems();
+    }
   }
 
-  // onSubmit = (e) =>{
-  //   e.preventDefault()
-    
-  //   const {value} = e.target;
+  onScroll = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  };
 
-  //   this.setState({q: value})
+  fetchItems = () => {
+    const { searchQuery, page } = this.state;
 
-  //   this.setState({q: ""})
-  // }
+    apiSearch
+      .apiSearch(searchQuery)
+      .then((galleryItems) => {
+        this.setState((prevState) => ({
+          galleryItems,
+          page: prevState.page + 1,
+        }));
+      })
+      .then(this.onScroll())
+      .catch((e) => {
+        this.setState({ e });
+      })
+      .finally(() => this.setState({ loading: false }));
+  };
 
-  render(){
-    const {loading, galleryItems} = this.state
-    
+  handleSearchApi = (query) => {
+    this.setState({ searchQuery: query });
+  };
+
+  render() {
+    const { loading, galleryItems, error } = this.state;
+
     return (
       <>
-      <Searchbar/>
-        {galleryItems.length>0 && <ImageGallery items={galleryItems}/>}
+        <Searchbar onSubmit={this.handleSearchApi} />
+        {galleryItems.length > 0 && <ImageGallery items={galleryItems} />}
+        {galleryItems.length > 0 && <Button />}
       </>
-    )
+    );
   }
 }
 
-export default App
+export default App;
