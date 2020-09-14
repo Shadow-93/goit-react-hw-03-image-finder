@@ -14,14 +14,19 @@ class App extends Component {
     loading: false,
     error: null,
     searchQuery: "",
-    page: 0,
+    page: 1,
   };
 
-  componentDidUpdate(prevProps, PrevState) {
-    const prevQuery = PrevState.searchQuery;
+  componentDidUpdate(prevProps, prevState) {
+    const prevQuery = prevState.searchQuery;
     const nextQuery = this.state.searchQuery;
+    
 
     if (prevQuery !== nextQuery) {
+      this.fetchItems();
+    }
+
+    if (prevState.page !== this.state.page){
       this.fetchItems();
     }
   }
@@ -33,15 +38,19 @@ class App extends Component {
     });
   };
 
+  nextPage = () =>{
+    this.setState(({page})=>{return{page: page + 1 }})
+  }
+
   fetchItems = () => {
     const { searchQuery, page } = this.state;
 
     apiSearch
-      .apiSearch(searchQuery)
+      .apiSearch(searchQuery, page)
       .then((galleryItems) => {
         this.setState((prevState) => ({
-          galleryItems,
-          page: prevState.page + 1,
+          galleryItems: [...prevState.galleryItems,...galleryItems]
+          
         }));
       })
       .then(this.onScroll())
@@ -62,7 +71,7 @@ class App extends Component {
       <>
         <Searchbar onSubmit={this.handleSearchApi} />
         {galleryItems.length > 0 && <ImageGallery items={galleryItems} />}
-        {galleryItems.length > 0 && <Button />}
+        {galleryItems.length > 0 && <Button onClickBtn={this.nextPage}/>}
       </>
     );
   }
