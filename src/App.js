@@ -8,7 +8,7 @@ import Loader from "./Loader";
 
 import "./App.css";
 
-class App extends Component {
+export default class App extends Component {
   state = {
     galleryItems: [],
     loading: false,
@@ -20,15 +20,16 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     const prevQuery = prevState.searchQuery;
     const nextQuery = this.state.searchQuery;
-    
 
     if (prevQuery !== nextQuery) {
       this.fetchItems();
     }
 
-    if (prevState.page !== this.state.page){
+    if (prevState.page !== this.state.page) {
       this.fetchItems();
     }
+
+    this.onScroll();
   }
 
   onScroll = () => {
@@ -38,43 +39,47 @@ class App extends Component {
     });
   };
 
-  nextPage = () =>{
-    this.setState(({page})=>{return{page: page + 1 }})
-  }
+  nextPage = () => {
+    this.setState(({ page }) => {
+      return { page: page + 1 };
+    });
+  };
 
   fetchItems = () => {
     const { searchQuery, page } = this.state;
+    this.setState({ loading: true });
 
     apiSearch
       .apiSearch(searchQuery, page)
       .then((galleryItems) => {
         this.setState((prevState) => ({
-          galleryItems: [...prevState.galleryItems,...galleryItems]
-          
+          galleryItems: [...prevState.galleryItems, ...galleryItems],
         }));
       })
-      .then(this.onScroll())
       .catch((e) => {
         this.setState({ e });
       })
-      .finally(() => this.setState({ loading: false }));
+      .finally(() => {
+        this.setState({ loading: false });
+      });
   };
 
   handleSearchApi = (query) => {
-    this.setState({ searchQuery: query });
+    this.setState({ searchQuery: query, page: 1, galleryItems: [] });
   };
 
   render() {
-    const { loading, galleryItems, error } = this.state;
+    const { loading, galleryItems } = this.state;
 
     return (
       <>
         <Searchbar onSubmit={this.handleSearchApi} />
         {galleryItems.length > 0 && <ImageGallery items={galleryItems} />}
-        {galleryItems.length > 0 && <Button onClickBtn={this.nextPage}/>}
+        {loading && <Loader />}
+        {galleryItems.length > 0 && !loading && (
+          <Button onClickBtn={this.nextPage} />
+        )}
       </>
     );
   }
 }
-
-export default App;

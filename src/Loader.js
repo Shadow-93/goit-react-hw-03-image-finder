@@ -8,13 +8,15 @@ export default class App extends React.Component {
   //other logic
   render() {
     return (
-      <Loader
-        type="Puff"
-        color="#00BFFF"
-        height={100}
-        width={100}
-        timeout={3000} //3 secs
-      />
+      <div className="spinner">
+        <Loader
+          type="Oval"
+          color="#00BFFF"
+          height={40}
+          width={40}
+          timeout={3000} //3 secs
+        />
+      </div>
     );
   }
 }
