@@ -5,16 +5,18 @@ import Searchbar from "./Searchbar";
 import ImageGallery from "./ImageGallery";
 import Button from "./Button";
 import Loader from "./Loader";
+import Modal from "./Modal";
 
 import "./App.css";
 
 export default class App extends Component {
   state = {
-    galleryItems: [],
-    loading: false,
-    error: null,
     searchQuery: "",
+    loading: false,
+    galleryItems: [],
     page: 1,
+    showModal: false,
+    largeImageURL: "",
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -68,13 +70,38 @@ export default class App extends Component {
     this.setState({ searchQuery: query, page: 1, galleryItems: [] });
   };
 
+  togleModal = () => {
+    this.setState({
+      showModal: !this.state.showModal,
+    });
+  };
+
+  openModal = (itemsId) => {
+    const itemId = this.state.galleryItems.find(({ id }) => id === itemsId);
+
+    this.setState({ largeImageURL: itemId.largeImageURL });
+  };
+
   render() {
-    const { loading, galleryItems } = this.state;
+    const { loading, galleryItems, showModal, largeImageURL } = this.state;
 
     return (
       <>
         <Searchbar onSubmit={this.handleSearchApi} />
-        {galleryItems.length > 0 && <ImageGallery items={galleryItems} />}
+        {showModal && (
+          <Modal
+            {...galleryItems}
+            onCloseItem={this.togleModal}
+            largeImageURL={largeImageURL}
+          />
+        )}
+        {galleryItems.length > 0 && (
+          <ImageGallery
+            items={galleryItems}
+            onOpenItem={this.togleModal}
+            onItemClick={this.openModal}
+          />
+        )}
         {loading && <Loader />}
         {galleryItems.length > 0 && !loading && (
           <Button onClickBtn={this.nextPage} />
