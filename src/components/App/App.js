@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 
-import apiSearch from "./services/api";
-import Searchbar from "./Searchbar";
-import ImageGallery from "./ImageGallery";
-import Button from "./Button";
-import Loader from "./Loader";
-import Modal from "./Modal";
+import apiSearch from "../../services/api";
+import Searchbar from "../Searchbar/Searchbar";
+import ImageGallery from "../ImageGallery/ImageGallery";
+import Button from "../Button/Button";
+import Loader from "../Loader/Loader";
+import Modal from "../Modal/Modal";
 
 import "./App.css";
 
