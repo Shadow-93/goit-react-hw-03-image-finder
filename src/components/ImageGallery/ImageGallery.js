@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 
 import ImageGalleryItem from "./ImageGalleryItem";
 
-const ImageGallery = ({ items, onOpenItem, onItemClick }) => {
+const ImageGallery = ({ items, onCloseItem, onItemClick }) => {
   return (
-    <ul className="ImageGallery" onClick={onOpenItem}>
+    <ul className="ImageGallery" onClick={onCloseItem}>
       {items.map((item) => {
         const { id } = item;
         return (
@@ -24,7 +24,7 @@ ImageGallery.propTypes = {
       id: PropTypes.number.isRequired,
     })
   ).isRequired,
-  onOpenItem: PropTypes.func.isRequired,
+  onCloseItem: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,
 };
 

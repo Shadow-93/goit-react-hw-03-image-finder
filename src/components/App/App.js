@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 
-import apiSearch from "../../services/api";
 import Searchbar from "../Searchbar/Searchbar";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import Button from "../Button/Button";
 import Loader from "../Loader/Loader";
 import Modal from "../Modal/Modal";
+
+import apiSearch from "../../services/api";
 
 import "./App.css";
 
@@ -17,21 +18,16 @@ export default class App extends Component {
     page: 1,
     showModal: false,
     largeImageURL: "",
+    e: [],
   };
 
   componentDidUpdate(prevProps, prevState) {
     const prevQuery = prevState.searchQuery;
     const nextQuery = this.state.searchQuery;
 
-    if (prevQuery !== nextQuery) {
+    if (prevQuery !== nextQuery || prevState.page !== this.state.page) {
       this.fetchItems();
     }
-
-    if (prevState.page !== this.state.page) {
-      this.fetchItems();
-    }
-
-    this.onScroll();
   }
 
   onScroll = () => {
@@ -63,6 +59,7 @@ export default class App extends Component {
       })
       .finally(() => {
         this.setState({ loading: false });
+        this.onScroll();
       });
   };
 
@@ -70,16 +67,16 @@ export default class App extends Component {
     this.setState({ searchQuery: query, page: 1, galleryItems: [] });
   };
 
-  togleModal = () => {
-    this.setState({
-      showModal: !this.state.showModal,
-    });
-  };
-
   openModal = (itemsId) => {
     const itemId = this.state.galleryItems.find(({ id }) => id === itemsId);
 
     this.setState({ largeImageURL: itemId.largeImageURL });
+  };
+
+  closeModal = () => {
+    this.setState({
+      showModal: !this.state.showModal,
+    });
   };
 
   render() {
@@ -89,17 +86,13 @@ export default class App extends Component {
       <>
         <Searchbar onSubmit={this.handleSearchApi} />
         {showModal && (
-          <Modal
-            {...galleryItems}
-            onCloseItem={this.togleModal}
-            largeImageURL={largeImageURL}
-          />
+          <Modal onCloseItem={this.closeModal} largeImageURL={largeImageURL} />
         )}
         {galleryItems.length > 0 && (
           <ImageGallery
             items={galleryItems}
-            onOpenItem={this.togleModal}
             onItemClick={this.openModal}
+            onCloseItem={this.closeModal}
           />
         )}
         {loading && <Loader />}
