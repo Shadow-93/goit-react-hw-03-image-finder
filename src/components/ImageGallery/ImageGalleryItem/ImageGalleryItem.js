@@ -1,18 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const ImageGalleryItem = ({ tags, webformatURL, id, onClickItem }) => {
-  const imgId = (id) => {
-    onClickItem(id);
-  };
-
+const ImageGalleryItem = ({ tags, webformatURL, imgId, onClickItem }) => {
+  console.log(imgId);
   return (
     <li className="ImageGalleryItem">
       <img
         src={webformatURL}
         alt={tags}
         className="ImageGalleryItem-image"
-        onClick={() => imgId(id)}
+        onClick={() => onClickItem(imgId)}
       />
     </li>
   );
@@ -21,7 +18,7 @@ const ImageGalleryItem = ({ tags, webformatURL, id, onClickItem }) => {
 ImageGalleryItem.propTypes = {
   tags: PropTypes.string.isRequired,
   webformatURL: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
+  imgId: PropTypes.number.isRequired,
   onClickItem: PropTypes.func.isRequired,
 };
 

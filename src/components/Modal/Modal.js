@@ -21,9 +21,15 @@ class Modal extends Component {
     }
   };
 
+  backdropClose = (e) => {
+    if (e.currentTarget === e.target) {
+      this.props.onCloseItem();
+    }
+  };
+
   render() {
     return (
-      <div className="Overlay">
+      <div className="Overlay" onClick={this.backdropClose}>
         <div className="Modal">
           <img src={this.props.largeImageURL} alt="" />;
         </div>

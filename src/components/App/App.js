@@ -18,7 +18,7 @@ export default class App extends Component {
     page: 1,
     showModal: false,
     largeImageURL: "",
-    e: [],
+    totalHits: 0,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -49,13 +49,16 @@ export default class App extends Component {
 
     apiSearch
       .apiSearch(searchQuery, page)
-      .then((galleryItems) => {
+      .then((data) => {
+        const { hits, totalHits } = data;
+
         this.setState((prevState) => ({
-          galleryItems: [...prevState.galleryItems, ...galleryItems],
+          galleryItems: [...prevState.galleryItems, ...hits],
+          totalHits: totalHits,
         }));
       })
       .catch((e) => {
-        this.setState({ e });
+        console.log(e);
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -70,12 +73,16 @@ export default class App extends Component {
   openModal = (itemsId) => {
     const itemId = this.state.galleryItems.find(({ id }) => id === itemsId);
 
-    this.setState({ largeImageURL: itemId.largeImageURL });
+    this.setState({
+      largeImageURL: itemId.largeImageURL,
+      showModal: !this.state.showModal,
+    });
   };
 
   closeModal = () => {
     this.setState({
       showModal: !this.state.showModal,
+      largeImageURL: "",
     });
   };
 
@@ -86,19 +93,21 @@ export default class App extends Component {
       <>
         <Searchbar onSubmit={this.handleSearchApi} />
         {showModal && (
-          <Modal onCloseItem={this.closeModal} largeImageURL={largeImageURL} />
-        )}
-        {galleryItems.length > 0 && (
-          <ImageGallery
-            items={galleryItems}
-            onItemClick={this.openModal}
+          <Modal
             onCloseItem={this.closeModal}
+            onBackdroppClick={this.backdropClose}
+            largeImageURL={largeImageURL}
           />
         )}
-        {loading && <Loader />}
-        {galleryItems.length > 0 && !loading && (
-          <Button onClickBtn={this.nextPage} />
+        {galleryItems.length > 0 && (
+          <ImageGallery items={galleryItems} onItemClick={this.openModal} />
         )}
+        {loading && <Loader />}
+        {galleryItems.length > 0 &&
+          !loading &&
+          this.state.galleryItems.length !== this.state.totalHits && (
+            <Button onClickBtn={this.nextPage} />
+          )}
       </>
     );
   }

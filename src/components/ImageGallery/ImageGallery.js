@@ -1,15 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import ImageGalleryItem from "./ImageGalleryItem";
+import ImageGalleryItem from "./ImageGalleryItem/ImageGalleryItem";
 
-const ImageGallery = ({ items, onCloseItem, onItemClick }) => {
+const ImageGallery = ({ items, onItemClick }) => {
   return (
-    <ul className="ImageGallery" onClick={onCloseItem}>
+    <ul className="ImageGallery">
       {items.map((item) => {
-        const { id } = item;
+        const { id, tags, webformatURL } = item;
+
         return (
-          <ImageGalleryItem key={id} {...item} onClickItem={onItemClick} />
+          <ImageGalleryItem
+            key={id}
+            imgId={id}
+            tags={tags}
+            webformatURL={webformatURL}
+            onClickItem={onItemClick}
+          />
         );
       })}
     </ul>
@@ -24,7 +31,6 @@ ImageGallery.propTypes = {
       id: PropTypes.number.isRequired,
     })
   ).isRequired,
-  onCloseItem: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,
 };
 
