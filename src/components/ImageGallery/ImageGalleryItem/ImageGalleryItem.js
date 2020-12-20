@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const ImageGalleryItem = ({ tags, webformatURL, imgId, onClickItem }) => {
-  console.log(imgId);
   return (
     <li className="ImageGalleryItem">
       <img
