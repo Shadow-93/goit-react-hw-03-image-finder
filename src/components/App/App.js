@@ -75,13 +75,13 @@ export default class App extends Component {
 
     this.setState({
       largeImageURL: itemId.largeImageURL,
-      showModal: !this.state.showModal,
+      showModal: true,
     });
   };
 
   closeModal = () => {
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: false,
       largeImageURL: "",
     });
   };
@@ -93,11 +93,7 @@ export default class App extends Component {
       <>
         <Searchbar onSubmit={this.handleSearchApi} />
         {showModal && (
-          <Modal
-            onCloseItem={this.closeModal}
-            onBackdroppClick={this.backdropClose}
-            largeImageURL={largeImageURL}
-          />
+          <Modal onCloseItem={this.closeModal} largeImageURL={largeImageURL} />
         )}
         {galleryItems.length > 0 && (
           <ImageGallery items={galleryItems} onItemClick={this.openModal} />
